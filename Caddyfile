@@ -1,0 +1,52 @@
+cloud.domain.name {
+
+        root    * /var/www/html
+        file_server
+
+        php_fastcgi nextcloud:9000
+        header {
+                # enable HSTS
+                Strict-Transport-Security max-age=31536000;
+        }
+
+        redir /.well-known/carddav /remote.php/dav 301
+        redir /.well-known/caldav /remote.php/dav 301
+
+        # .htaccess / data / config / ... shouldn't be accessible from outside
+        @forbidden {
+                path    /.htaccess
+                path    /data/*
+                path    /config/*
+                path    /db_structure
+                path    /.xml
+                path    /README
+                path    /3rdparty/*
+                path    /lib/*
+                path    /templates/*
+                path    /occ
+                path    /console.php
+        }
+
+        respond @forbidden 404
+
+}
+
+matrix.domain.name {
+        # change: NOT /_matrix because otherwise,
+        # /_synapse does not work on this port and synapse-admin fails to work
+        reverse_proxy synapse:8008
+}
+
+matrix.domain.name:8448 {
+        reverse_proxy synapse:8008
+}
+
+matrix.domain.name:8080 {
+        reverse_proxy synapse_admin:80
+}
+
+
+# the bellow reverse proxy shouldn't be necessary, but it enable caddy to know it must request certificates for this subdomain as well, as this is needed by coturn
+turn.domain.name {
+        reverse_proxy localhost
+}
