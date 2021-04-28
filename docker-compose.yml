@@ -14,7 +14,9 @@ services:
       - MYSQL_USER=nextclouduser
 
   nextcloud:
-    image: nextcloud:20-fpm
+    build:
+      context: .
+      dockerfile: Dockerfile-nextcloud
     restart: always
     depends_on:
       - nextcloud_db
@@ -26,12 +28,29 @@ services:
       image: postgres:13
       restart: always
       environment:
-          POSTGRES_PASSWORD: mJ6bG2j8csXXxPsvDvub
+          POSTGRES_PASSWORD: ZZZ
           POSTGRES_USER: synapse
           POSTGRES_DB: synapse
           POSTGRES_INITDB_ARGS: "--encoding='UTF8' --lc-collate='C' --lc-ctype='C'"
       volumes:
           - "/mnt/disk/synapse_db:/var/lib/postgresql/"
+  
+  synapse_db_backups:
+    container_name: Backup
+    image: prodrigestivill/postgres-backup-local
+    restart: always
+    volumes:
+      - /mnt/disk/synapse_db_backups:/backups
+    depends_on:
+      - synapse_db
+    environment:
+      - POSTGRES_HOST=synapse_db
+      - POSTGRES_DB=synapse
+      - POSTGRES_USER=synapse
+      - POSTGRES_PASSWORD=ZZZ
+      - POSTGRES_EXTRA_OPTS=-Z9 --schema=public --blobs
+      - SCHEDULE=@daily
+      - HEALTHCHECK_PORT=81
 
   turn:
       image: "instrumentisto/coturn:4.5"
@@ -43,7 +62,7 @@ services:
       network_mode: host
 
   synapse:
-      image: "matrixdotorg/synapse:v1.22.1"
+      image: "matrixdotorg/synapse:v1.32.2"
       restart: always
       depends_on:
           - synapse_db
@@ -55,14 +74,14 @@ services:
           TZ: "FR"
 
   synapse_admin:
-      image: "awesometechnologies/synapse-admin:latest"
+      image: "awesometechnologies/synapse-admin:0.7.2"
       restart: always
       depends_on:
           - synapse
           - turn
 
   caddy:
-    image: caddy:2.1.1
+    image: caddy:2.3.0
     restart: always
     ports:
       - 80:80

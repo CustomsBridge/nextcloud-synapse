@@ -1,16 +1,16 @@
 # nextcloud-synapse
 
-At Customs bridge we spent some time linking together great pieces of software in order to build our daily working tools. It is called nextcloud-synaype as it mainly relies on Nextcloud and Synapse (which is a Matrix server implementation).
+At Customs bridge we spent some time linking together great pieces of software in order to build our daily working tools. It is called nextcloud-synapse as it mainly relies on Nextcloud and Synapse (which is a Matrix server implementation).
 
 By reading through this README and acting when asked for, you should have a working solution in 30 minutes or less.
-PRs are welcome if they simplify the project and make it less complicated to setup. For example a setup script.
+PRs are welcome if they simplify the project and make it less complicated to setup. For example a setup script.<br/>
 If you are looking for more adavanced options regarding synapse setup, head over this [nice Ansible playbook](https://github.com/spantaleev/matrix-docker-ansible-deploy)
 
 # Setup
 
 First ensure you have git, docker, and docker-compose installed on your server.
 We take the asumption you own a server/cloud server with at least 4GB memory. It may work with less though.
-You must also possess a domain name (`domain.name`) in the bellow config.  You must be able to create subdomains and own the DNS in order to redirect via `A` and `AAAA` records the trafic to your server.
+You must also possess a domain name (`domain.name` in the bellow config).  You must be able to create subdomains and own the DNS in order to redirect via `A` and `AAAA` records the trafic to your server.
 
 ## clone repo
 run `git clone https://github.com/CustomsBridge/nextcloud-synapse.git`
@@ -24,14 +24,14 @@ Lets quickly go through them and learn how they interact with each others.
 The first two ones `nextcloud` and `nextcloud_db` are, as you can imagine nextcloud and it's related database. Nextcloud will provide us with the functionalities of file sync, cloud drive, collaborative document edition, light project management. It could even provide some remote working capabilities as chat and video calls.
 However for the moment (2020) we estimate these chat and video calls feature would be better handled by matrix.
 
-Here come the second bundle of our setup. `synapse_db`, `turn`, `synapse`, `synapse_admin`:
+Here comes the second bundle of our setup. `synapse_db`, `turn`, `synapse`, `synapse_admin`:
 
-`synapse` is an implementation of the matrix protocol and is linked with it's database: `synapse_db`
-`turn` is a VoIP media traffic NAT traversal server and gateway. In other words, it helps software talk to each other when behind NAT. It's needed to have working Voice calls in matrix.
-`synapse_admin` is not really necessary but helps with initial setup of your synapse server. Can be safely removed afterwards.
+- `synapse` is an implementation of the matrix protocol and is linked with it's database: `synapse_db`.\
+- `turn` is a VoIP media traffic NAT traversal server and gateway. In other words, it helps software talk to each other when behind NAT. It's needed to have working Voice calls in matrix.\
+- `synapse_admin` is not really necessary but helps with initial setup of your synapse server. Can be safely removed afterwards.
 
 Lastely, `caddy` is a rising webserver that handles https by himself, saving us from having to define a certbot service to handle our SSL certificates.
-For us it also acts as reverse proxy for nextcloud that is in it's `fpm` variant. More performant, but requires a reverse proxy.
+For us it also acts as reverse proxy for nextcloud that is in it's `fpm` variant(More performant, but requires a reverse proxy).
 
 Now that the landscape is set, let's see interresting lines of this file.
 <br/>
