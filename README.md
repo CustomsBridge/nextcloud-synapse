@@ -3,7 +3,8 @@
 At Customs bridge we spent some time linking together great pieces of software in order to build our daily working tools. It is called nextcloud-synapse as it mainly relies on Nextcloud and Synapse (which is a Matrix server implementation).
 
 By reading through this README and acting when asked for, you should have a working solution in 30 minutes or less.
-PRs are welcome if they simplify the project and make it less complicated to setup. For example a setup script.<br/>
+PRs are welcome if they simplify the project and make it less complicated to setup. For example a setup script.
+
 If you are looking for more adavanced options regarding synapse setup, head over this [nice Ansible playbook](https://github.com/spantaleev/matrix-docker-ansible-deploy)
 
 # Setup
