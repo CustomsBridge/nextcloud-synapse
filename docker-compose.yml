@@ -24,6 +24,21 @@ services:
       - /mnt/disk/nextcloud_data:/var/www/html
       - ./www2.conf:/usr/local/etc/php-fpm.d/www2.conf
 
+  onlyoffice-document-server:
+    container_name: onlyoffice-document-server
+    image: onlyoffice/documentserver:latest
+    restart: always
+    ports:
+      - 8880:80
+    environment:
+      - JWT_ENABLED=true
+      - JWT_SECRET=secret
+   volumes:
+      - /mnt/disk/only_office/document_data:/var/www/onlyoffice/Data
+      - /mnt/disk/only_office/document_log:/var/log/onlyoffice
+      - /mnt/disk/only_office/file_cache:/var/lib/onlyoffice
+      - /mnt/disk/only_office/database:/var/lib/postgresql
+
   synapse_db:
       image: postgres:13
       restart: always
@@ -81,7 +96,7 @@ services:
           - turn
 
   caddy:
-    image: caddy:2.3.0
+    image: caddy:2.4.3
     restart: always
     ports:
       - 80:80
