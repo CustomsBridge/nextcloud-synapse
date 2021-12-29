@@ -1,0 +1,175 @@
+# vim:ft=yaml
+
+## TLS ##
+
+
+
+#tls_certificate_path: "/data/matrix.domain.name.tls.crt"
+#tls_private_key_path: "/data/matrix.domain.name.tls.key"
+
+
+
+## Server ##
+
+server_name: "matrix.domain.name"
+public_baseurl: "https://matrix.domain.name"
+pid_file: /homeserver.pid
+web_client: False
+soft_file_limit: 0
+log_config: "/data/log.config"
+
+## Ports ##
+
+listeners:
+  
+#    port: 8448
+#    bind_addresses: ['::']
+#    type: http
+#    tls: true
+#    x_forwarded: false
+#    resources:
+#      - names: [client]
+#        compress: true
+#      - names: [federation]  # Federation APIs
+#        compress: false
+  
+
+  # Allow configuring in case we want to reverse proxy 8008
+  # using another process in the same container
+  - port: 8008
+    tls: false
+    bind_addresses: ['::']
+    type: http
+    x_forwarded: false
+
+    resources:
+      - names: [client,openid]
+        compress: true
+
+## Federation. If no whitelist is defined, every server can connect ##
+federation_domain_whitelist:
+  - matrix.domain.name
+
+## Database ##
+
+database:
+  name: psycopg2
+  args:
+    user: synapse
+    password: ZZZ
+    database: synapse
+    host: synapse_db
+    cp_min: 5
+    cp_max: 10
+#database:
+#  name: "sqlite3"
+#  args:
+#    database: "/data/homeserver.db"
+
+
+## Email ##
+email:
+  smtp_host: smtp.sendgrid.net
+  smtp_port: 587
+  notif_from: xxx
+  smtp_user: apikey
+  smtp_pass: xxx
+  enable_notifs: true    
+
+## Performance ##
+
+event_cache_size: "10K"
+
+## Ratelimiting ##
+
+rc_messages_per_second: 0.2
+rc_message_burst_count: 10.0
+federation_rc_window_size: 1000
+federation_rc_sleep_limit: 10
+federation_rc_sleep_delay: 500
+federation_rc_reject_limit: 50
+federation_rc_concurrent: 3
+
+## Files ##
+
+media_store_path: "/data/media"
+max_upload_size: "50M"
+max_image_pixels: "32M"
+dynamic_thumbnails: false
+
+# List of thumbnail to precalculate when an image is uploaded.
+thumbnail_sizes:
+- width: 32
+  height: 32
+  method: crop
+- width: 96
+  height: 96
+  method: crop
+- width: 320
+  height: 240
+  method: scale
+- width: 640
+  height: 480
+  method: scale
+- width: 800
+  height: 600
+  method: scale
+
+url_preview_enabled: False
+max_spider_size: "10M"
+
+## Captcha ##
+
+
+recaptcha_public_key: "YOUR_PUBLIC_KEY"
+recaptcha_private_key: "YOUR_PRIVATE_KEY"
+enable_registration_captcha: False
+recaptcha_siteverify_api: "https://www.google.com/recaptcha/api/siteverify"
+
+
+## Turn ##
+
+
+turn_uris: ["turn:turn.domain.name?transport=udp", "turn:turn.domain.name?transport=tcp"]
+turn_shared_secret: "blop"
+turn_user_lifetime: "1h"
+turn_allow_guests: False
+
+
+## Registration ##
+
+enable_registration: False
+# registration_shared_secret: "blop"
+bcrypt_rounds: 12
+allow_guest_access: False
+enable_group_creation: True
+
+
+## Metrics ###
+
+
+enable_metrics: True
+report_stats: True
+
+
+## API Configuration ##
+
+
+
+macaroon_secret_key: "blop"
+expire_access_token: False
+
+## Signing Keys ##
+
+signing_key_path: "/data/matrix.domain.name.signing.key"
+old_signing_keys: {}
+key_refresh_interval: "1d" # 1 Day.
+
+# The trusted servers to download signing keys from.
+trusted_key_servers:
+  - server_name: matrix.org
+    verify_keys:
+      "ed25519:auto": "blop"
+
+password_config:
+   enabled: true

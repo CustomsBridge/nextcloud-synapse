@@ -1,0 +1,43 @@
+version: "3"
+
+services:
+  nextcloud_db:
+    image: mariadb:10.7-focal
+    container_name: nextcloud_db
+    restart: always
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    volumes:
+      - /mnt/disk/nextcloud/nextcloud_db:/var/lib/mysql
+      - ./overrides.cnf:/etc/mysql/conf.d/overrides.cnf
+    environment:
+      - MYSQL_ROOT_PASSWORD=XXXX
+      - MYSQL_PASSWORD=YYYY
+      - MYSQL_DATABASE=nextclouddb
+      - MYSQL_USER=nextclouduser
+
+  nextcloud:
+    build:
+      context: .
+      dockerfile: Dockerfile-nextcloud
+    container_name: nextcloud
+    restart: always
+    depends_on:
+      - nextcloud_db
+    volumes:
+      - /mnt/disk/nextcloud/nextcloud_data:/var/www/html
+      - ./www2.conf:/usr/local/etc/php-fpm.d/www2.conf
+
+  onlyoffice:
+    image: onlyoffice/documentserver:6.4
+    container_name: onlyoffice
+    restart: always
+    ports:
+      - 8880:80
+    environment:
+      - JWT_ENABLED=true
+      - JWT_SECRET=secret
+    volumes:
+      - /mnt/disk/nextcloud/only_office/document_data:/var/www/onlyoffice/Data
+      - /mnt/disk/nextcloud/only_office/document_log:/var/log/onlyoffice
+      - /mnt/disk/nextcloud/only_office/file_cache:/var/lib/onlyoffice
+      - /mnt/disk/nextcloud/only_office/database:/var/lib/postgresql

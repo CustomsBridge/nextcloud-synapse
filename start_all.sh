@@ -1,0 +1,1 @@
+docker-compose -f dc-nextcloud.yml -f dc-synapse.yml up -f dc-caddy.yml up -d

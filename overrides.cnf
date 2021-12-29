@@ -1,0 +1,2 @@
+[mariadbd]
+innodb_read_only_compressed=0

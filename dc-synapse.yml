@@ -1,0 +1,62 @@
+version: "3"
+
+services:
+  synapse_db:
+    image: postgres:14
+    container_name: synapse_db
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: ZZZ
+      POSTGRES_USER: synapse
+      POSTGRES_DB: synapse
+      POSTGRES_INITDB_ARGS: "--encoding='UTF8' --lc-collate='C' --lc-ctype='C'"
+    volumes:
+      - "/mnt/disk/synapse/synapse_db:/var/lib/postgresql/data"
+  
+  synapse_db_backups:
+    image: prodrigestivill/postgres-backup-local:9.6
+    container_name: synapse_backup
+    restart: always
+    volumes:
+      - /mnt/disk/synapse/synapse_db_backups:/backups
+    depends_on:
+      - synapse_db
+    environment:
+      - POSTGRES_HOST=synapse_db
+      - POSTGRES_DB=synapse
+      - POSTGRES_USER=synapse
+      - POSTGRES_PASSWORD=ZZZ
+      - POSTGRES_EXTRA_OPTS=-Z9 --schema=public --blobs
+      - SCHEDULE=@daily
+      - HEALTHCHECK_PORT=81
+
+  turn:
+    image: "coturn/coturn:4.5"
+    container_name: coturn
+    restart: always
+    volumes:
+      - "/mnt/disk/synapse/coturn_data:/var/lib/coturn/"
+      - "./coturn.conf:/etc/coturn/turnserver.conf"
+      - "/mnt/disk/caddy/caddy_data/certificates/acme-v02.api.letsencrypt.org-directory/turn.domain.name:/etc/certs/"
+    network_mode: host
+
+  synapse:
+    image: "matrixdotorg/synapse:v1.49.2"
+    container_name: synapse
+    restart: always
+    depends_on:
+      - synapse_db
+    volumes:
+      - "/mnt/disk/synapse/synapse_data:/data"
+    environment:
+      SYNAPSE_SERVER_NAME: "matrix.domain.name"
+      SYNAPSE_REPORT_STATS: "yes"
+      TZ: "FR"
+
+  synapse_admin:
+    image: "awesometechnologies/synapse-admin:0.8.4"
+    container_name: synapse_admin
+    restart: always
+    depends_on:
+      - synapse
+      - turn

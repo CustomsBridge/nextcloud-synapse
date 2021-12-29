@@ -47,7 +47,7 @@ matrix.domain.name:8080 {
 
 onlyoffice.domain.name {
         encode gzip
-        reverse_proxy onlyoffice-document-server:80
+        reverse_proxy onlyoffice:80
 }
 
 # the bellow reverse proxy shouldn't be necessary, but it enable caddy to know it must request certificates for this subdomain as well, as this is needed by coturn
