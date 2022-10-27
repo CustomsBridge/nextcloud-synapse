@@ -2,7 +2,7 @@ version: "3"
 
 services:
   nextcloud_db:
-    image: mariadb:10.7-focal
+    image: mariadb:10.9
     container_name: nextcloud_db
     restart: always
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
@@ -28,7 +28,7 @@ services:
       - ./www2.conf:/usr/local/etc/php-fpm.d/www2.conf
 
   onlyoffice:
-    image: onlyoffice/documentserver:6.4
+    image: onlyoffice/documentserver:7.2
     container_name: onlyoffice
     restart: always
     ports:
